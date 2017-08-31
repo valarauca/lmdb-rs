@@ -963,11 +963,12 @@ pub struct DbHandle {
 unsafe impl Sync for DbHandle {}
 unsafe impl Send for DbHandle {}
 
+/// The state a transaction is in
 #[derive(Copy, PartialEq, Debug, Eq, Clone)]
 enum TransactionState {
-    Normal,   // Normal, any operation possible
-    Released, // Released (reset on readonly), has to be renewed
-    Invalid,  // Invalid, no further operation possible
+    Normal,     // Normal, any operation possible
+    Released,   // Released (reset on readonly), has to be renewed
+    Invalid,    // Invalid, no further operation possible
 }
 
 #[derive(Debug)]
@@ -979,6 +980,7 @@ struct NativeTransaction<'a> {
 }
 
 impl<'a> NativeTransaction<'a> {
+
     fn new_with_handle(h: *mut ffi::MDB_txn, flags: usize, env: &Environment) -> NativeTransaction {
         // debug!("new native txn");
         NativeTransaction {
@@ -989,13 +991,18 @@ impl<'a> NativeTransaction<'a> {
         }
     }
 
+    #[inline(always)]
     fn is_readonly(&self) -> bool {
         (self.flags as u32 & ffi::MDB_RDONLY) == ffi::MDB_RDONLY
     }
 
+    #[inline(always)]
+    fn get_state(&self) -> TransactionState {
+        self.state.clone()
+    }
+
     fn commit(&mut self) -> MdbResult<()> {
         assert_state_eq!(txn, self.state, TransactionState::Normal);
-        debug!("commit txn");
         self.state = if self.is_readonly() {
             TransactionState::Released
         } else {
@@ -1006,15 +1013,12 @@ impl<'a> NativeTransaction<'a> {
     }
 
     fn abort(&mut self) {
-        if self.state != TransactionState::Normal {
-            debug!("Can't abort transaction: current state {:?}", self.state)
-        } else {
-            debug!("abort txn");
+        if self.state == TransactionState::Normal {
             unsafe { ffi::mdb_txn_abort(self.handle); }
-            self.state = if self.is_readonly() {
-                TransactionState::Released
-            } else {
+            self.state = if ! self.is_readonly() {
                 TransactionState::Invalid
+            } else {
+                TransactionState::Released
             };
         }
     }
@@ -1022,12 +1026,19 @@ impl<'a> NativeTransaction<'a> {
     /// Resets read only transaction, handle is kept. Must be followed
     /// by a call to `renew`
     fn reset(&mut self) {
-        if self.state != TransactionState::Normal {
-            debug!("Can't reset transaction: current state {:?}", self.state);
-        } else {
-            unsafe { ffi::mdb_txn_reset(self.handle); }
-            self.state = TransactionState::Released;
-        }
+        match self.state.clone() {
+            TransactionState::Released|
+            TransactionState::Invalid => { },
+            TransactionState::Normal => {
+                if self.is_readonly() {
+                    unsafe { ffi::mdb_txn_reset(self.handle); }
+                    self.state = TransactionState::Released;
+                } else {
+                    unsafe { ffi::mdb_txn_reset(self.handle); }
+                    self.state = TransactionState::Invalid;
+                }
+            }
+        };
     }
 
     /// Acquires a new reader lock after it was released by reset
@@ -1046,14 +1057,22 @@ impl<'a> NativeTransaction<'a> {
 
     /// Used in Drop to switch state
     fn silent_abort(&mut self) {
-        if self.state == TransactionState::Normal {
-            debug!("silent abort");
-            unsafe {ffi::mdb_txn_abort(self.handle);}
-            self.state = TransactionState::Invalid;
-        }
+        match self.state.clone() {
+            TransactionState::Invalid |
+            TransactionState::Released => {
+                //unsafe{ffi::mdb_txn_abort(self.handle)};
+            }
+            TransactionState::Normal => {
+                if self.is_readonly() {
+                    unsafe{ffi::mdb_txn_reset(self.handle)};
+                }
+                unsafe{ffi::mdb_txn_abort(self.handle)};
+            }
+        };
+        self.state = TransactionState::Invalid;
     }
 
-    fn get_value<V: FromMdbValue + 'a>(&'a self, db: ffi::MDB_dbi, key: &ToMdbValue) -> MdbResult<V> {
+    fn get_value<V: FromMdbValue + 'a, K: ToMdbValue+?Sized>(&'a self, db: ffi::MDB_dbi, key: &K) -> MdbResult<V> {
         let mut key_val = key.to_mdb_value();
         unsafe {
             let mut data_val: MdbValue = std::mem::zeroed();
@@ -1062,16 +1081,16 @@ impl<'a> NativeTransaction<'a> {
         }
     }
 
-    fn get<V: FromMdbValue + 'a>(&'a self, db: ffi::MDB_dbi, key: &ToMdbValue) -> MdbResult<V> {
+    fn get<V: FromMdbValue+'a, K: ToMdbValue+?Sized>(&'a self, db: ffi::MDB_dbi, key: &K) -> MdbResult<V> {
         assert_state_eq!(txn, self.state, TransactionState::Normal);
         self.get_value(db, key)
     }
 
-    fn set_value(&self, db: ffi::MDB_dbi, key: &ToMdbValue, value: &ToMdbValue) -> MdbResult<()> {
+    fn set_value<K: ToMdbValue+?Sized, V: ToMdbValue+?Sized>(&self, db: ffi::MDB_dbi, key: &K, value: &V) -> MdbResult<()> {
         self.set_value_with_flags(db, key, value, 0)
     }
 
-    fn set_value_with_flags(&self, db: ffi::MDB_dbi, key: &ToMdbValue, value: &ToMdbValue, flags: c_uint) -> MdbResult<()> {
+    fn set_value_with_flags<K: ToMdbValue+?Sized, V: ToMdbValue+?Sized>(&self, db: ffi::MDB_dbi, key: &K, value: &V, flags: c_uint) -> MdbResult<()> {
         unsafe {
             let mut key_val = key.to_mdb_value();
             let mut data_val = value.to_mdb_value();
@@ -1084,30 +1103,30 @@ impl<'a> NativeTransaction<'a> {
     /// it actually appends a new value
     // FIXME: think about creating explicit separation of
     // all traits for databases with dup keys
-    fn set(&self, db: ffi::MDB_dbi, key: &ToMdbValue, value: &ToMdbValue) -> MdbResult<()> {
+    fn set<K: ToMdbValue+?Sized, V: ToMdbValue+?Sized>(&self, db: ffi::MDB_dbi, key: &K, value: &V) -> MdbResult<()> {
         assert_state_eq!(txn, self.state, TransactionState::Normal);
         self.set_value(db, key, value)
     }
 
-    fn append(&self, db: ffi::MDB_dbi, key: &ToMdbValue, value: &ToMdbValue) -> MdbResult<()> {
+    fn append<K: ToMdbValue+?Sized, V: ToMdbValue+?Sized>(&self, db: ffi::MDB_dbi, key: &K, value: &V) -> MdbResult<()> {
         assert_state_eq!(txn, self.state, TransactionState::Normal);
         self.set_value_with_flags(db, key, value, ffi::MDB_APPEND)
     }
 
-    fn append_duplicate(&self, db: ffi::MDB_dbi, key: &ToMdbValue, value: &ToMdbValue) -> MdbResult<()> {
+    fn append_duplicate<K: ToMdbValue+?Sized, V: ToMdbValue+?Sized>(&self, db: ffi::MDB_dbi, key: &K, value: &V) -> MdbResult<()> {
         assert_state_eq!(txn, self.state, TransactionState::Normal);
         self.set_value_with_flags(db, key, value, ffi::MDB_APPENDDUP)
     }
 
     /// Set the value for key only if the key does not exist in the database,
     /// even if the database supports duplicates.
-    fn insert(&self, db: ffi::MDB_dbi, key: &ToMdbValue, value: &ToMdbValue) -> MdbResult<()> {
+    fn insert<K: ToMdbValue+?Sized, V: ToMdbValue+?Sized>(&self, db: ffi::MDB_dbi, key: &K, value: &V) -> MdbResult<()> {
         assert_state_eq!(txn, self.state, TransactionState::Normal);
         self.set_value_with_flags(db, key, value, ffi::MDB_NOOVERWRITE)
     }
 
     /// Deletes all values by key
-    fn del_value(&self, db: ffi::MDB_dbi, key: &ToMdbValue) -> MdbResult<()> {
+    fn del_value<K: ToMdbValue+?Sized>(&self, db: ffi::MDB_dbi, key: &K) -> MdbResult<()> {
         unsafe {
             let mut key_val = key.to_mdb_value();
             lift_mdb!(ffi::mdb_del(self.handle, db, &mut key_val.value, ptr::null_mut()))
@@ -1115,7 +1134,7 @@ impl<'a> NativeTransaction<'a> {
     }
 
     /// If duplicate keys are allowed deletes value for key which is equal to data
-    fn del_item(&self, db: ffi::MDB_dbi, key: &ToMdbValue, data: &ToMdbValue) -> MdbResult<()> {
+    fn del_item<K: ToMdbValue+?Sized, V: ToMdbValue+?Sized>(&self, db: ffi::MDB_dbi, key: &K, data: &V) -> MdbResult<()> {
         assert_state_eq!(txn, self.state, TransactionState::Normal);
         unsafe {
             let mut key_val = key.to_mdb_value();
@@ -1126,7 +1145,7 @@ impl<'a> NativeTransaction<'a> {
     }
 
     /// Deletes all values for key
-    fn del(&self, db: ffi::MDB_dbi, key: &ToMdbValue) -> MdbResult<()> {
+    fn del<K: ToMdbValue+?Sized>(&self, db: ffi::MDB_dbi, key: &K) -> MdbResult<()> {
         assert_state_eq!(txn, self.state, TransactionState::Normal);
         self.del_value(db, key)
     }
@@ -1158,19 +1177,6 @@ impl<'a> NativeTransaction<'a> {
         let mut tmp: ffi::MDB_stat = unsafe { std::mem::zeroed() };
         lift_mdb!(unsafe { ffi::mdb_stat(self.handle, db, &mut tmp)}, tmp)
     }
-
-    /*
-    fn get_db(&self, name: &str, flags: DbFlags) -> MdbResult<Database> {
-        self.env.get_db(name, flags)
-            .and_then(|db| Ok(Database::new_with_handle(db.handle, self)))
-    }
-    */
-
-    /*
-    fn get_or_create_db(&self, name: &str, flags: DbFlags) -> MdbResult<Database> {
-        self.get_db(name, flags | DbCreate)
-    }
-    */
 }
 
 impl<'a> Drop for NativeTransaction<'a> {

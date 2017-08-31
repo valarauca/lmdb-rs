@@ -176,6 +176,19 @@ fn test_append_duplicate() {
 }
 
 #[test]
+fn test_recycle_transaction() {
+    let env = EnvBuilder::new()
+        .max_dbs(5)
+        .open(&next_path(), USER_DIR)
+        .unwrap();
+    
+    let db = env.get_default_db(core::DbAllowDups).unwrap();
+    let mut ro_txn = env.get_reader().expect("Could not build read only transaction");
+    ro_txn.reset();
+    assert!(ro_txn.renew().is_ok());
+}
+
+#[test]
 fn test_insert_values() {
     let env = EnvBuilder::new()
         .max_dbs(5)
