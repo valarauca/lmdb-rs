@@ -1336,7 +1336,7 @@ impl<'txn> Cursor<'txn> {
     }
 
     fn move_to<K, V>(&mut self, key: &K, value: Option<&V>, op: ffi::MDB_cursor_op) -> MdbResult<()>
-        where K: ToMdbValue, V: ToMdbValue {
+        where K: ToMdbValue+?Sized, V: ToMdbValue+?Sized {
         self.key_val = key.to_mdb_value().value;
         self.data_val = match value {
             Some(v) => v.to_mdb_value().value,
@@ -1357,25 +1357,25 @@ impl<'txn> Cursor<'txn> {
     }
 
     /// Moves cursor to first entry for key if it exists
-    pub fn to_key<'k, K: ToMdbValue>(&mut self, key: &'k K) -> MdbResult<()> {
+    pub fn to_key<'k, K: ToMdbValue+?Sized>(&mut self, key: &'k K) -> MdbResult<()> {
         self.move_to(key, None::<&MdbValue<'k>>, ffi::MDB_cursor_op::MDB_SET_KEY)
     }
 
     /// Moves cursor to first entry for key greater than
     /// or equal to ke
-    pub fn to_gte_key<'k, K: ToMdbValue>(&mut self, key: &'k K) -> MdbResult<()> {
+    pub fn to_gte_key<'k, K: ToMdbValue+?Sized>(&mut self, key: &'k K) -> MdbResult<()> {
         self.move_to(key, None::<&MdbValue<'k>>, ffi::MDB_cursor_op::MDB_SET_RANGE)
     }
 
     /// Moves cursor to specific item (for example, if cursor
     /// already points to a correct key and you need to delete
     /// a specific item through cursor)
-    pub fn to_item<K, V>(&mut self, key: &K, value: & V) -> MdbResult<()> where K: ToMdbValue, V: ToMdbValue {
+    pub fn to_item<K, V>(&mut self, key: &K, value: & V) -> MdbResult<()> where K: ToMdbValue+?Sized, V: ToMdbValue+?Sized {
         self.move_to(key, Some(value), ffi::MDB_cursor_op::MDB_GET_BOTH)
     }
 
     /// Moves cursor to nearest item.
-    pub fn to_gte_item<K, V>(&mut self, key: &K, value: & V) -> MdbResult<()> where K: ToMdbValue, V: ToMdbValue {
+    pub fn to_gte_item<K, V>(&mut self, key: &K, value: & V) -> MdbResult<()> where K: ToMdbValue+?Sized, V: ToMdbValue+?Sized {
         self.move_to(key, Some(value), ffi::MDB_cursor_op::MDB_GET_BOTH_RANGE)
     }
 
@@ -1488,13 +1488,13 @@ impl<'txn> Cursor<'txn> {
         }
     }
 
-    fn set_value<V: ToMdbValue>(&mut self, value: &V, flags: c_uint) -> MdbResult<()> {
+    fn set_value<V: ToMdbValue+?Sized>(&mut self, value: &V, flags: c_uint) -> MdbResult<()> {
         try!(self.ensure_key_valid());
         self.data_val = value.to_mdb_value().value;
         lift_mdb!(unsafe {ffi::mdb_cursor_put(self.handle, &mut self.key_val, &mut self.data_val, flags)})
     }
 
-    pub fn set<K: ToMdbValue, V: ToMdbValue>(&mut self, key: &K, value: &V, flags: c_uint) -> MdbResult<()> {
+    pub fn set<K: ToMdbValue+?Sized, V: ToMdbValue+?Sized>(&mut self, key: &K, value: &V, flags: c_uint) -> MdbResult<()> {
         self.key_val = key.to_mdb_value().value;
         self.valid_key = true;
         let res = self.set_value(value, flags);
@@ -1504,14 +1504,14 @@ impl<'txn> Cursor<'txn> {
 
     /// Overwrites value for current item
     /// Note: overwrites max cur_value.len() bytes
-    pub fn replace<V: ToMdbValue>(&mut self, value: &V) -> MdbResult<()> {
+    pub fn replace<V: ToMdbValue+?Sized>(&mut self, value: &V) -> MdbResult<()> {
         let res = self.set_value(value, ffi::MDB_CURRENT);
         self.valid_key = false;
         res
     }
 
     /// Adds a new item when created with allowed duplicates
-    pub fn add_item<V: ToMdbValue>(&mut self, value: &V) -> MdbResult<()> {
+    pub fn add_item<V: ToMdbValue+?Sized>(&mut self, value: &V) -> MdbResult<()> {
         let res = self.set_value(value, 0);
         self.valid_key = false;
         res
@@ -1547,13 +1547,6 @@ impl<'txn> Cursor<'txn> {
         let mut tmp: size_t = 0;
         lift_mdb!(unsafe {ffi::mdb_cursor_count(self.handle, &mut tmp)}, tmp)
     }
-
-    pub fn get_item<'k, K: ToMdbValue>(self, k: &'k K) -> CursorItemAccessor<'txn, 'k, K> {
-        CursorItemAccessor {
-            cursor: self,
-            key: k
-        }
-    }
 }
 
 impl<'txn> Drop for Cursor<'txn> {
@@ -1561,39 +1554,6 @@ impl<'txn> Drop for Cursor<'txn> {
         unsafe { ffi::mdb_cursor_close(self.handle) };
     }
 }
-
-#[derive(Debug)]
-pub struct CursorItemAccessor<'c, 'k, K: 'k> {
-    cursor: Cursor<'c>,
-    key: &'k K,
-}
-
-impl<'k, 'c: 'k, K: ToMdbValue> CursorItemAccessor<'c, 'k, K> {
-    pub fn get<'a, V: FromMdbValue + 'a>(&'a mut self) -> MdbResult<V> {
-        try!(self.cursor.to_key(self.key));
-        self.cursor.get_value()
-    }
-
-    pub fn add<V: ToMdbValue>(&mut self, v: &V) -> MdbResult<()> {
-        self.cursor.set(self.key, v, 0)
-    }
-
-    pub fn del<V: ToMdbValue>(&mut self, v: &V) -> MdbResult<()> {
-        try!(self.cursor.to_item(self.key, v));
-        self.cursor.del_item()
-    }
-
-    pub fn del_all(&mut self) -> MdbResult<()> {
-        try!(self.cursor.to_key(self.key));
-        self.cursor.del_all()
-    }
-
-    pub fn into_inner(self) -> Cursor<'c> {
-        let tmp = self;
-        tmp.cursor
-    }
-}
-
 
 #[derive(Debug)]
 pub struct CursorValue<'cursor> {
@@ -1810,7 +1770,7 @@ pub struct CursorItemIter<'a> {
 
 
 impl<'a> CursorItemIter<'a> {
-    pub fn new<K: ToMdbValue+'a>(key: &'a K) -> CursorItemIter<'a> {
+    pub fn new<K: ToMdbValue+?Sized+'a>(key: &'a K) -> CursorItemIter<'a> {
         CursorItemIter {
             key: key.to_mdb_value(),
             marker: ::std::marker::PhantomData
