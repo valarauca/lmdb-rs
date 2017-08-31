@@ -106,8 +106,9 @@ impl FromMdbValue for String {
     fn from_mdb_value(value: &MdbValue) -> String {
         unsafe {
             let ptr = mem::transmute(value.get_ref());
-            let data: Vec<u8> = slice::from_raw_parts(ptr, value.get_size()).to_vec();
-            String::from_utf8(data).unwrap()
+            let bytes = slice::from_raw_parts(ptr, value.get_size());
+            let cow = String::from_utf8_lossy(bytes);
+            cow.into_owned()
         }
     }
 }
