@@ -1015,11 +1015,7 @@ impl<'a> NativeTransaction<'a> {
     fn abort(&mut self) {
         if self.state == TransactionState::Normal {
             unsafe { ffi::mdb_txn_abort(self.handle); }
-            self.state = if ! self.is_readonly() {
-                TransactionState::Invalid
-            } else {
-                TransactionState::Released
-            };
+            self.state = TransactionState::Invalid;
         }
     }
 
@@ -1063,10 +1059,7 @@ impl<'a> NativeTransaction<'a> {
                 //unsafe{ffi::mdb_txn_abort(self.handle)};
             }
             TransactionState::Normal => {
-                if self.is_readonly() {
-                    unsafe{ffi::mdb_txn_reset(self.handle)};
-                }
-                unsafe{ffi::mdb_txn_abort(self.handle)};
+                self.abort();
             }
         };
         self.state = TransactionState::Invalid;
