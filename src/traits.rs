@@ -153,11 +153,6 @@ macro_rules! mdb_for_primitive {
 
         impl FromMdbValue for $t {
             fn from_mdb_value(value: &MdbValue) -> $t {
-                let sized = ::std::mem::size_of::<$t>();
-                let real_size = value.get_size();
-                if real_size != sized {
-                    panic!("Size error. Type {} has size of {:?} but value has size of {:?}",stringify!($t),real_size, sized);
-                }
                 unsafe {
                     let t: *const $t = mem::transmute(value.get_ref());
                     return ::std::ptr::read_unaligned::<$t>(t);
