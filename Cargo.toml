@@ -1,6 +1,6 @@
 [package]
 name = "lmdb-rs"
-version = "1.0.0"
+version = "0.8.0"
 authors = [
 	"William Cody Laeder <codylaeder@gmail.com>",
 	"Valerii Hiora <valerii.hiora@gmail.com>"
