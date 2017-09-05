@@ -1,13 +1,16 @@
 [package]
 name = "lmdb-rs"
-version = "0.7.6"
-authors = ["Valerii Hiora <valerii.hiora@gmail.com>"]
-license = "MIT"
+version = "1.0.0"
+authors = [
+	"William Cody Laeder <codylaeder@gmail.com>",
+	"Valerii Hiora <valerii.hiora@gmail.com>"
+]
+license = "MIT/Apache2"
 description = "LMDB bindings"
-repository = "https://github.com/vhbit/lmdb-rs"
-documentation = "https://vhbit.github.io/lmdb-rs/lmdb_rs"
+repository = "https://github.com/valarauca/lmdb-rs"
+documentation = "https://valarauca.github.io/lmdb-rs/lmdb_rs"
 readme = "README.md"
-keywords = ["lmdb", "db", "key-value", "kvs", "kv"]
+keywords = ["lmdb", "key-value", "kvs", "kv", "memory-mapped"]
 exclude = [
         ".gitignore",
         ".travis.yml",

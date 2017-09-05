@@ -1,3 +1,18 @@
+/*
+ * Copyright 2017 William Cody Laeder
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *     Unless required by applicable law or agreed to in writing, software
+ *     distributed under the License is distributed on an "AS IS" BASIS,
+ *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *     See the License for the specific language governing permissions and
+ *     limitations under the License.
+ */
 use std::env;
 use std::fs::{self};
 use std::path::{PathBuf};
@@ -74,7 +89,7 @@ fn test_environment() {
 
     db.set(&key, &value).unwrap();
 
-    let v = db.get::<&str>(&key).unwrap();
+    let v = db.get::<&str,&str>(&key).unwrap();
     assert!(v == value, "Written {} and read {}", &value, &v);
 }
 
@@ -93,18 +108,15 @@ fn test_single_values() {
     let test_data1 = "value1";
     let test_data2 = "value2";
 
-    assert!(db.get::<()>(&test_key1).is_err(), "Key shouldn't exist yet");
+    assert!(db.get::<(), &str>(&test_key1).is_err(), "Key shouldn't exist yet");
 
     assert!(db.set(&test_key1, &test_data1).is_ok());
-    let v = db.get::<&str>(&test_key1).unwrap();
+    let v = db.get::<&str,&str>(&test_key1).unwrap();
     assert!(v == test_data1, "Data written differs from data read");
 
-    assert!(db.set(&test_key1, &test_data2).is_ok());
-    let v = db.get::<&str>(&test_key1).unwrap();
-    assert!(v == test_data2, "Data written differs from data read");
-
     assert!(db.del(&test_key1).is_ok());
-    assert!(db.get::<()>(&test_key1).is_err(), "Key should be deleted");
+
+    assert!(db.get::<(), &str>(&test_key1).is_err(), "Key shouldn't exist anymore!");
 }
 
 #[test]
@@ -122,23 +134,23 @@ fn test_multiple_values() {
     let test_data1 = "value1";
     let test_data2 = "value2";
 
-    assert!(db.get::<()>(&test_key1).is_err(), "Key shouldn't exist yet");
+    assert!(db.get::<(), &str>(&test_key1).is_err(), "Key shouldn't exist yet");
 
     assert!(db.set(&test_key1, &test_data1).is_ok());
-    let v = db.get::<&str>(&test_key1).unwrap();
+    let v = db.get::<&str,&str>(&test_key1).unwrap();
     assert!(v == test_data1, "Data written differs from data read");
 
     assert!(db.set(&test_key1, &test_data2).is_ok());
-    let v = db.get::<&str>(&test_key1).unwrap();
+    let v = db.get::<&str,&str>(&test_key1).unwrap();
     assert!(v == test_data1, "It should still return first value");
 
     assert!(db.del_item(&test_key1, &test_data1).is_ok());
 
-    let v = db.get::<&str>(&test_key1).unwrap();
+    let v = db.get::<&str,&str>(&test_key1).unwrap();
     assert!(v == test_data2, "It should return second value");
     assert!(db.del(&test_key1).is_ok());
 
-    assert!(db.get::<()>(&test_key1).is_err(), "Key shouldn't exist anymore!");
+    assert!(db.get::<(), &str>(&test_key1).is_err(), "Key shouldn't exist anymore!");
 }
 
 #[test]
@@ -157,16 +169,16 @@ fn test_append_duplicate() {
     let test_data2 = "value2";
 
     assert!(db.append(&test_key1, &test_data1).is_ok());
-    let v = db.get::<&str>(&test_key1).unwrap();
+    let v = db.get::<&str,&str>(&test_key1).unwrap();
     assert!(v == test_data1, "Data written differs from data read");
 
     assert!(db.append_duplicate(&test_key1, &test_data2).is_ok());
-    let v = db.get::<&str>(&test_key1).unwrap();
+    let v = db.get::<&str,&str>(&test_key1).unwrap();
     assert!(v == test_data1, "It should still return first value");
 
     assert!(db.del_item(&test_key1, &test_data1).is_ok());
 
-    let v = db.get::<&str>(&test_key1).unwrap();
+    let v = db.get::<&str,&str>(&test_key1).unwrap();
     assert!(v == test_data2, "It should return second value");
 
     match db.append_duplicate(&test_key1, &test_data1).err().unwrap() {
@@ -203,16 +215,16 @@ fn test_insert_values() {
     let test_data1 = "value1";
     let test_data2 = "value2";
 
-    assert!(db.get::<()>(&test_key1).is_err(), "Key shouldn't exist yet");
+    assert!(db.get::<(), &str>(&test_key1).is_err(), "Key shouldn't exist yet");
 
     assert!(db.set(&test_key1, &test_data1).is_ok());
-    let v = db.get::<&str>(&test_key1).unwrap();
+    let v: &str = db.get(&test_key1).unwrap();
     assert!(v == test_data1, "Data written differs from data read");
 
     assert!(db.insert(&test_key1, &test_data2).is_err(), "Inserting should fail if key exists");
 
     assert!(db.del(&test_key1).is_ok());
-    assert!(db.get::<()>(&test_key1).is_err(), "Key should be deleted");
+    assert!(db.get::<(), &str>(&test_key1).is_err(), "Key should be deleted");
 
     assert!(db.insert(&test_key1, &test_data2).is_ok(), "Inserting should succeed");
 }
@@ -319,7 +331,7 @@ fn test_cursors() {
     let test_key2 = "key2";
     let test_values: Vec<&str> = vec!("value1", "value2", "value3", "value4");
 
-    assert!(db.get::<()>(&test_key1).is_err(), "Key shouldn't exist yet");
+    assert!(db.get::<(),&str>(&test_key1).is_err(), "Key shouldn't exist yet");
 
     for t in test_values.iter() {
         let _ = db.set(&test_key1, t);

@@ -29,6 +29,6 @@ fn main() {
 
     let reader = env.get_reader().unwrap();
     let db = reader.bind(&db_handle);
-    let name = db.get::<&str>(&"Smith").unwrap();
+    let name = db.get::<&str,&str>(&"Smith").unwrap();
     println!("It's {} Smith", name);
 }

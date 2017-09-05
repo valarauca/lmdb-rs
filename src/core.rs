@@ -1,3 +1,20 @@
+/*
+ * Copyright 2017 William Cody Laeder
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *     Unless required by applicable law or agreed to in writing, software
+ *     distributed under the License is distributed on an "AS IS" BASIS,
+ *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *     See the License for the specific language governing permissions and
+ *     limitations under the License.
+ */
+
+
 //! High level wrapper of LMDB APIs
 //!
 //! Requires knowledge of LMDB terminology
@@ -396,6 +413,7 @@ pub struct Database<'a> {
 // FIXME: provide different interfaces for simple KV and storage with duplicates
 
 impl<'a> Database<'a> {
+
     fn new_with_handle(handle: ffi::MDB_dbi, txn: &'a NativeTransaction<'a>) -> Database<'a> {
         Database { handle: handle, txn: txn }
     }
@@ -406,41 +424,41 @@ impl<'a> Database<'a> {
     }
 
     /// Retrieves a value by key. In case of DbAllowDups it will be the first value
-    pub fn get<V: FromMdbValue + 'a>(&'a self, key: &ToMdbValue) -> MdbResult<V> {
+    pub fn get<V: FromMdbValue + 'a, K: ToMdbValue+?Sized>(&'a self, key: &K) -> MdbResult<V> {
         self.txn.get(self.handle, key)
     }
 
     /// Sets value for key. In case of DbAllowDups it will add a new item
-    pub fn set(&self, key: &ToMdbValue, value: &ToMdbValue) -> MdbResult<()> {
+    pub fn set<K: ToMdbValue+?Sized, V: ToMdbValue+?Sized>(&self, key: &K, value: &V) -> MdbResult<()> {
         self.txn.set(self.handle, key, value)
     }
 
     /// Appends new key-value pair to database, starting a new page instead of splitting an
     /// existing one if necessary. Requires that key be >= all existing keys in the database
     /// (or will return KeyExists error).
-    pub fn append<K: ToMdbValue, V: ToMdbValue>(&self, key: &K, value: &V) -> MdbResult<()> {
+    pub fn append<K: ToMdbValue+?Sized, V: ToMdbValue+?Sized>(&self, key: &K, value: &V) -> MdbResult<()> {
         self.txn.append(self.handle, key, value)
     }
 
     /// Appends new value for the given key (requires DbAllowDups), starting a new page instead
     /// of splitting an existing one if necessary. Requires that value be >= all existing values
     /// for the given key (or will return KeyExists error).
-    pub fn append_duplicate<K: ToMdbValue, V: ToMdbValue>(&self, key: &K, value: &V) -> MdbResult<()> {
+    pub fn append_duplicate<K: ToMdbValue+?Sized, V: ToMdbValue+?Sized>(&self, key: &K, value: &V) -> MdbResult<()> {
         self.txn.append_duplicate(self.handle, key, value)
     }
 
     /// Set value for key. Fails if key already exists, even when duplicates are allowed.
-    pub fn insert(&self, key: &ToMdbValue, value: &ToMdbValue) -> MdbResult<()> {
+    pub fn insert<K: ToMdbValue+?Sized, V: ToMdbValue+?Sized>(&self, key: &K, value: &V) -> MdbResult<()> {
         self.txn.insert(self.handle, key, value)
     }
 
     /// Deletes value for key.
-    pub fn del(&self, key: &ToMdbValue) -> MdbResult<()> {
+    pub fn del<K: ToMdbValue+?Sized>(&self, key: &K) -> MdbResult<()> {
         self.txn.del(self.handle, key)
     }
 
     /// Should be used only with DbAllowDups. Deletes corresponding (key, value)
-    pub fn del_item(&self, key: &ToMdbValue, data: &ToMdbValue) -> MdbResult<()> {
+    pub fn del_item<K: ToMdbValue+?Sized, V: ToMdbValue+?Sized>(&self, key: &K, data: &V) -> MdbResult<()> {
         self.txn.del_item(self.handle, key, data)
     }
 
@@ -466,7 +484,7 @@ impl<'a> Database<'a> {
     }
 
     /// Returns an iterator through keys starting with start_key (>=), start_key is included
-    pub fn keyrange_from<'c, K: ToMdbValue + 'c>(&'c self, start_key: &'c K) -> MdbResult<CursorIterator<'c, CursorFromKeyIter>> {
+    pub fn keyrange_from<'c, K: ToMdbValue+?Sized+ 'c>(&'c self, start_key: &'c K) -> MdbResult<CursorIterator<'c, CursorFromKeyIter>> {
         let cursor = try!(self.txn.new_cursor(self.handle));
         let key_range = CursorFromKeyIter::new(start_key);
         let wrap = CursorIterator::wrap(cursor, key_range);
@@ -474,7 +492,7 @@ impl<'a> Database<'a> {
     }
 
     /// Returns an iterator through keys less than end_key, end_key is not included
-    pub fn keyrange_to<'c, K: ToMdbValue + 'c>(&'c self, end_key: &'c K) -> MdbResult<CursorIterator<'c, CursorToKeyIter>> {
+    pub fn keyrange_to<'c, K: ToMdbValue+?Sized+ 'c>(&'c self, end_key: &'c K) -> MdbResult<CursorIterator<'c, CursorToKeyIter>> {
         let cursor = try!(self.txn.new_cursor(self.handle));
         let key_range = CursorToKeyIter::new(end_key);
         let wrap = CursorIterator::wrap(cursor, key_range);
@@ -483,7 +501,7 @@ impl<'a> Database<'a> {
 
     /// Returns an iterator through keys `start_key <= x < end_key`. This is, start_key is
     /// included in the iteration, while end_key is kept excluded.
-    pub fn keyrange_from_to<'c, K: ToMdbValue + 'c>(&'c self, start_key: &'c K, end_key: &'c K)
+    pub fn keyrange_from_to<'c, K: ToMdbValue+?Sized+ 'c>(&'c self, start_key: &'c K, end_key: &'c K)
                                -> MdbResult<CursorIterator<'c, CursorKeyRangeIter>>
     {
         let cursor = try!(self.txn.new_cursor(self.handle));
@@ -496,7 +514,7 @@ impl<'a> Database<'a> {
     /// Currently it works only for unique keys (i.e. it will skip
     /// multiple items when DB created with ffi::MDB_DUPSORT).
     /// Iterator is valid while cursor is valid
-    pub fn keyrange<'c, K: ToMdbValue + 'c>(&'c self, start_key: &'c K, end_key: &'c K)
+    pub fn keyrange<'c, K: ToMdbValue+?Sized+'c>(&'c self, start_key: &'c K, end_key: &'c K)
                                -> MdbResult<CursorIterator<'c, CursorKeyRangeIter>>
     {
         let cursor = try!(self.txn.new_cursor(self.handle));
@@ -506,7 +524,7 @@ impl<'a> Database<'a> {
     }
 
     /// Returns an iterator for all items (i.e. values with same key)
-    pub fn item_iter<'c, 'db: 'c, K: ToMdbValue>(&'db self, key: &'c K) -> MdbResult<CursorIterator<'c, CursorItemIter<'c>>> {
+    pub fn item_iter<'c, 'db: 'c, K: ToMdbValue+?Sized+'c>(&'db self, key: &'c K) -> MdbResult<CursorIterator<'c, CursorItemIter<'c>>> {
         let cursor = try!(self.txn.new_cursor(self.handle));
         let inner_iter = CursorItemIter::<'c>::new(key);
         Ok(CursorIterator::<'c>::wrap(cursor, inner_iter))
@@ -1026,13 +1044,8 @@ impl<'a> NativeTransaction<'a> {
             TransactionState::Released|
             TransactionState::Invalid => { },
             TransactionState::Normal => {
-                if self.is_readonly() {
-                    unsafe { ffi::mdb_txn_reset(self.handle); }
-                    self.state = TransactionState::Released;
-                } else {
-                    unsafe { ffi::mdb_txn_reset(self.handle); }
-                    self.state = TransactionState::Invalid;
-                }
+                unsafe { ffi::mdb_txn_reset(self.handle); }
+                self.state = TransactionState::Released;
             }
         };
     }
@@ -1055,9 +1068,7 @@ impl<'a> NativeTransaction<'a> {
     fn silent_abort(&mut self) {
         match self.state.clone() {
             TransactionState::Invalid |
-            TransactionState::Released => {
-                //unsafe{ffi::mdb_txn_abort(self.handle)};
-            }
+            TransactionState::Released => {}
             TransactionState::Normal => {
                 self.abort();
             }
@@ -1094,8 +1105,6 @@ impl<'a> NativeTransaction<'a> {
 
     /// Sets a new value for key, in case of enabled duplicates
     /// it actually appends a new value
-    // FIXME: think about creating explicit separation of
-    // all traits for databases with dup keys
     fn set<K: ToMdbValue+?Sized, V: ToMdbValue+?Sized>(&self, db: ffi::MDB_dbi, key: &K, value: &V) -> MdbResult<()> {
         assert_state_eq!(txn, self.state, TransactionState::Normal);
         self.set_value(db, key, value)
@@ -1214,7 +1223,7 @@ impl<'a> Transaction<'a> {
         t.inner.abort();
     }
 
-    pub fn bind(&self, db_handle: &DbHandle) -> Database {
+    pub fn bind(&'a self, db_handle: &'a DbHandle) -> Database<'a> {
         Database::new_with_handle(db_handle.handle, &self.inner)
     }
 }
@@ -1656,7 +1665,7 @@ pub struct CursorKeyRangeIter<'a> {
 }
 
 impl<'a> CursorKeyRangeIter<'a> {
-    pub fn new<K: ToMdbValue+'a>(start_key: &'a K, end_key: &'a K, end_inclusive: bool) -> CursorKeyRangeIter<'a> {
+    pub fn new<K: ToMdbValue+'a+?Sized>(start_key: &'a K, end_key: &'a K, end_inclusive: bool) -> CursorKeyRangeIter<'a> {
         CursorKeyRangeIter {
             start_key: start_key.to_mdb_value(),
             end_key: end_key.to_mdb_value(),
@@ -1692,7 +1701,7 @@ pub struct CursorFromKeyIter<'a> {
 
 
 impl<'a> CursorFromKeyIter<'a> {
-    pub fn new<K: ToMdbValue+'a>(start_key: &'a K) -> CursorFromKeyIter<'a> {
+    pub fn new<K: ToMdbValue+'a+?Sized>(start_key: &'a K) -> CursorFromKeyIter<'a> {
         CursorFromKeyIter {
             start_key: start_key.to_mdb_value(),
             marker: ::std::marker::PhantomData
@@ -1721,7 +1730,7 @@ pub struct CursorToKeyIter<'a> {
 
 
 impl<'a> CursorToKeyIter<'a> {
-    pub fn new<K: ToMdbValue+'a>(end_key: &'a K) -> CursorToKeyIter<'a> {
+    pub fn new<K: ToMdbValue+'a+?Sized>(end_key: &'a K) -> CursorToKeyIter<'a> {
         CursorToKeyIter {
             end_key: end_key.to_mdb_value(),
             marker: ::std::marker::PhantomData,

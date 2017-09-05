@@ -1,12 +1,9 @@
 lmdb-rs
 =======
 
-[![Build status (master)](https://travis-ci.org/vhbit/lmdb-rs.svg?branch=master)](https://travis-ci.org/vhbit/lmdb-rs)
-[![Latest version](http://meritbadge.herokuapp.com/lmdb-rs)](https://crates.io/crates/lmdb-rs)
-
 Rust bindings for [LMDB](http://symas.com/mdb/)
 
-[Documentation (master branch)](http://vhbit.github.io/lmdb-rs/lmdb_rs/)
+[Documentation (master branch)](http://valarauca.github.io/lmdb-rs/lmdb_rs/)
 
 Building
 ========
@@ -19,8 +16,20 @@ And then
 
 `cargo build`
 
-Feedback
+Notes
 ========
 
-Feel free to ping me if you have a question or a suggestion how to
-make it better and idiomatic.
+This is a fork of [vhbit crate](https://github.com/vhbit/lmdb-rs)
+
+In short I ran into a lot of headaches with
+
+* Bad life time management.
+* Transaction handles not being dropped.
+* No support for zero-sized types which make building abstractions above
+this project difficult.
+* Panicing on non-utf8 strings.
+
+This is my attempt at cleaning things up slightly.
+
+There is still a _fair_ amount of unsafety. Hopefully in the future I'll be
+able to release a higher level crate with _saner_ bindings above this.
