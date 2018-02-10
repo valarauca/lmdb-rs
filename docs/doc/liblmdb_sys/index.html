@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `liblmdb_sys` crate.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, liblmdb_sys">
+
+    <title>liblmdb_sys - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../normalize.css">
+    <link rel="stylesheet" type="text/css" href="../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../main.css">
+    
+
+    
+    
+</head>
+<body class="rustdoc mod">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'>Crate liblmdb_sys</p><div class="block items"><ul><li><a href="#structs">Structs</a></li><li><a href="#enums">Enums</a></li><li><a href="#constants">Constants</a></li><li><a href="#functions">Functions</a></li><li><a href="#types">Type Definitions</a></li></ul></div><p class='location'></p><script>window.sidebarCurrent = {name: 'liblmdb_sys', ty: 'mod', relpath: '../'};</script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content">
+<h1 class='fqn'><span class='in-band'>Crate <a class="mod" href=''>liblmdb_sys</a></span><span class='out-of-band'><span id='render-detail'>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a class='srclink' href='../src/liblmdb_sys/lib.rs.html#1-211' title='goto source code'>[src]</a></span></h1>
+<h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
+<table>
+                       <tr class=' module-item'>
+                           <td><a class="struct" href="struct.MDB_envinfo.html"
+                                  title='struct liblmdb_sys::MDB_envinfo'>MDB_envinfo</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="struct" href="struct.MDB_stat.html"
+                                  title='struct liblmdb_sys::MDB_stat'>MDB_stat</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="struct" href="struct.MDB_val.html"
+                                  title='struct liblmdb_sys::MDB_val'>MDB_val</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr></table><h2 id='enums' class='section-header'><a href="#enums">Enums</a></h2>
+<table>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.MDB_cursor.html"
+                                  title='enum liblmdb_sys::MDB_cursor'>MDB_cursor</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.MDB_cursor_op.html"
+                                  title='enum liblmdb_sys::MDB_cursor_op'>MDB_cursor_op</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.MDB_env.html"
+                                  title='enum liblmdb_sys::MDB_env'>MDB_env</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.MDB_txn.html"
+                                  title='enum liblmdb_sys::MDB_txn'>MDB_txn</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr></table><h2 id='constants' class='section-header'><a href="#constants">Constants</a></h2>
+<table>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.MDB_APPEND.html"
+                                  title='constant liblmdb_sys::MDB_APPEND'>MDB_APPEND</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.MDB_APPENDDUP.html"
+                                  title='constant liblmdb_sys::MDB_APPENDDUP'>MDB_APPENDDUP</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.MDB_BAD_RSLOT.html"
+                                  title='constant liblmdb_sys::MDB_BAD_RSLOT'>MDB_BAD_RSLOT</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.MDB_BAD_TXN.html"
+                                  title='constant liblmdb_sys::MDB_BAD_TXN'>MDB_BAD_TXN</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.MDB_BAD_VALSIZE.html"
+                                  title='constant liblmdb_sys::MDB_BAD_VALSIZE'>MDB_BAD_VALSIZE</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.MDB_CORRUPTED.html"
+                                  title='constant liblmdb_sys::MDB_CORRUPTED'>MDB_CORRUPTED</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.MDB_CREATE.html"
+                                  title='constant liblmdb_sys::MDB_CREATE'>MDB_CREATE</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.MDB_CURRENT.html"
+                                  title='constant liblmdb_sys::MDB_CURRENT'>MDB_CURRENT</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.MDB_CURSOR_FULL.html"
+                                  title='constant liblmdb_sys::MDB_CURSOR_FULL'>MDB_CURSOR_FULL</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.MDB_DBS_FULL.html"
+                                  title='constant liblmdb_sys::MDB_DBS_FULL'>MDB_DBS_FULL</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.MDB_DUPFIXED.html"
+                                  title='constant liblmdb_sys::MDB_DUPFIXED'>MDB_DUPFIXED</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.MDB_DUPSORT.html"
+                                  title='constant liblmdb_sys::MDB_DUPSORT'>MDB_DUPSORT</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.MDB_FIXEDMAP.html"
+                                  title='constant liblmdb_sys::MDB_FIXEDMAP'>MDB_FIXEDMAP</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.MDB_INCOMPATIBLE.html"
+                                  title='constant liblmdb_sys::MDB_INCOMPATIBLE'>MDB_INCOMPATIBLE</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.MDB_INTEGERDUP.html"
+                                  title='constant liblmdb_sys::MDB_INTEGERDUP'>MDB_INTEGERDUP</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.MDB_INTEGERKEY.html"
+                                  title='constant liblmdb_sys::MDB_INTEGERKEY'>MDB_INTEGERKEY</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.MDB_INVALID.html"
+                                  title='constant liblmdb_sys::MDB_INVALID'>MDB_INVALID</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.MDB_KEYEXIST.html"
+                                  title='constant liblmdb_sys::MDB_KEYEXIST'>MDB_KEYEXIST</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.MDB_MAPASYNC.html"
+                                  title='constant liblmdb_sys::MDB_MAPASYNC'>MDB_MAPASYNC</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.MDB_MAP_FULL.html"
+                                  title='constant liblmdb_sys::MDB_MAP_FULL'>MDB_MAP_FULL</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.MDB_MAP_RESIZED.html"
+                                  title='constant liblmdb_sys::MDB_MAP_RESIZED'>MDB_MAP_RESIZED</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.MDB_MULTIPLE.html"
+                                  title='constant liblmdb_sys::MDB_MULTIPLE'>MDB_MULTIPLE</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.MDB_NODUPDATA.html"
+                                  title='constant liblmdb_sys::MDB_NODUPDATA'>MDB_NODUPDATA</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.MDB_NOLOCK.html"
+                                  title='constant liblmdb_sys::MDB_NOLOCK'>MDB_NOLOCK</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.MDB_NOMEMINIT.html"
+                                  title='constant liblmdb_sys::MDB_NOMEMINIT'>MDB_NOMEMINIT</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.MDB_NOMETASYNC.html"
+                                  title='constant liblmdb_sys::MDB_NOMETASYNC'>MDB_NOMETASYNC</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.MDB_NOOVERWRITE.html"
+                                  title='constant liblmdb_sys::MDB_NOOVERWRITE'>MDB_NOOVERWRITE</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.MDB_NORDAHEAD.html"
+                                  title='constant liblmdb_sys::MDB_NORDAHEAD'>MDB_NORDAHEAD</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.MDB_NOSUBDIR.html"
+                                  title='constant liblmdb_sys::MDB_NOSUBDIR'>MDB_NOSUBDIR</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.MDB_NOSYNC.html"
+                                  title='constant liblmdb_sys::MDB_NOSYNC'>MDB_NOSYNC</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.MDB_NOTFOUND.html"
+                                  title='constant liblmdb_sys::MDB_NOTFOUND'>MDB_NOTFOUND</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.MDB_NOTLS.html"
+                                  title='constant liblmdb_sys::MDB_NOTLS'>MDB_NOTLS</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.MDB_PAGE_FULL.html"
+                                  title='constant liblmdb_sys::MDB_PAGE_FULL'>MDB_PAGE_FULL</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.MDB_PAGE_NOTFOUND.html"
+                                  title='constant liblmdb_sys::MDB_PAGE_NOTFOUND'>MDB_PAGE_NOTFOUND</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.MDB_PANIC.html"
+                                  title='constant liblmdb_sys::MDB_PANIC'>MDB_PANIC</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.MDB_RDONLY.html"
+                                  title='constant liblmdb_sys::MDB_RDONLY'>MDB_RDONLY</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.MDB_READERS_FULL.html"
+                                  title='constant liblmdb_sys::MDB_READERS_FULL'>MDB_READERS_FULL</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.MDB_RESERVE.html"
+                                  title='constant liblmdb_sys::MDB_RESERVE'>MDB_RESERVE</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.MDB_REVERSEDUP.html"
+                                  title='constant liblmdb_sys::MDB_REVERSEDUP'>MDB_REVERSEDUP</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.MDB_REVERSEKEY.html"
+                                  title='constant liblmdb_sys::MDB_REVERSEKEY'>MDB_REVERSEKEY</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.MDB_SUCCESS.html"
+                                  title='constant liblmdb_sys::MDB_SUCCESS'>MDB_SUCCESS</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.MDB_TLS_FULL.html"
+                                  title='constant liblmdb_sys::MDB_TLS_FULL'>MDB_TLS_FULL</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.MDB_TXN_FULL.html"
+                                  title='constant liblmdb_sys::MDB_TXN_FULL'>MDB_TXN_FULL</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.MDB_VERSION_MISMATCH.html"
+                                  title='constant liblmdb_sys::MDB_VERSION_MISMATCH'>MDB_VERSION_MISMATCH</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.MDB_WRITEMAP.html"
+                                  title='constant liblmdb_sys::MDB_WRITEMAP'>MDB_WRITEMAP</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr></table><h2 id='functions' class='section-header'><a href="#functions">Functions</a></h2>
+<table>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.mdb_cmp.html"
+                                  title='fn liblmdb_sys::mdb_cmp'>mdb_cmp</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.mdb_cursor_close.html"
+                                  title='fn liblmdb_sys::mdb_cursor_close'>mdb_cursor_close</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.mdb_cursor_count.html"
+                                  title='fn liblmdb_sys::mdb_cursor_count'>mdb_cursor_count</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.mdb_cursor_dbi.html"
+                                  title='fn liblmdb_sys::mdb_cursor_dbi'>mdb_cursor_dbi</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.mdb_cursor_del.html"
+                                  title='fn liblmdb_sys::mdb_cursor_del'>mdb_cursor_del</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.mdb_cursor_get.html"
+                                  title='fn liblmdb_sys::mdb_cursor_get'>mdb_cursor_get</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.mdb_cursor_open.html"
+                                  title='fn liblmdb_sys::mdb_cursor_open'>mdb_cursor_open</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.mdb_cursor_put.html"
+                                  title='fn liblmdb_sys::mdb_cursor_put'>mdb_cursor_put</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.mdb_cursor_renew.html"
+                                  title='fn liblmdb_sys::mdb_cursor_renew'>mdb_cursor_renew</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.mdb_cursor_txn.html"
+                                  title='fn liblmdb_sys::mdb_cursor_txn'>mdb_cursor_txn</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.mdb_dbi_close.html"
+                                  title='fn liblmdb_sys::mdb_dbi_close'>mdb_dbi_close</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.mdb_dbi_flags.html"
+                                  title='fn liblmdb_sys::mdb_dbi_flags'>mdb_dbi_flags</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.mdb_dbi_open.html"
+                                  title='fn liblmdb_sys::mdb_dbi_open'>mdb_dbi_open</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.mdb_dcmp.html"
+                                  title='fn liblmdb_sys::mdb_dcmp'>mdb_dcmp</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.mdb_del.html"
+                                  title='fn liblmdb_sys::mdb_del'>mdb_del</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.mdb_drop.html"
+                                  title='fn liblmdb_sys::mdb_drop'>mdb_drop</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.mdb_env_close.html"
+                                  title='fn liblmdb_sys::mdb_env_close'>mdb_env_close</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.mdb_env_copy.html"
+                                  title='fn liblmdb_sys::mdb_env_copy'>mdb_env_copy</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.mdb_env_copyfd.html"
+                                  title='fn liblmdb_sys::mdb_env_copyfd'>mdb_env_copyfd</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.mdb_env_create.html"
+                                  title='fn liblmdb_sys::mdb_env_create'>mdb_env_create</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.mdb_env_get_fd.html"
+                                  title='fn liblmdb_sys::mdb_env_get_fd'>mdb_env_get_fd</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.mdb_env_get_flags.html"
+                                  title='fn liblmdb_sys::mdb_env_get_flags'>mdb_env_get_flags</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.mdb_env_get_maxkeysize.html"
+                                  title='fn liblmdb_sys::mdb_env_get_maxkeysize'>mdb_env_get_maxkeysize</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.mdb_env_get_maxreaders.html"
+                                  title='fn liblmdb_sys::mdb_env_get_maxreaders'>mdb_env_get_maxreaders</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.mdb_env_get_path.html"
+                                  title='fn liblmdb_sys::mdb_env_get_path'>mdb_env_get_path</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.mdb_env_info.html"
+                                  title='fn liblmdb_sys::mdb_env_info'>mdb_env_info</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.mdb_env_open.html"
+                                  title='fn liblmdb_sys::mdb_env_open'>mdb_env_open</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.mdb_env_set_flags.html"
+                                  title='fn liblmdb_sys::mdb_env_set_flags'>mdb_env_set_flags</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.mdb_env_set_mapsize.html"
+                                  title='fn liblmdb_sys::mdb_env_set_mapsize'>mdb_env_set_mapsize</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.mdb_env_set_maxdbs.html"
+                                  title='fn liblmdb_sys::mdb_env_set_maxdbs'>mdb_env_set_maxdbs</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.mdb_env_set_maxreaders.html"
+                                  title='fn liblmdb_sys::mdb_env_set_maxreaders'>mdb_env_set_maxreaders</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.mdb_env_stat.html"
+                                  title='fn liblmdb_sys::mdb_env_stat'>mdb_env_stat</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.mdb_env_sync.html"
+                                  title='fn liblmdb_sys::mdb_env_sync'>mdb_env_sync</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.mdb_get.html"
+                                  title='fn liblmdb_sys::mdb_get'>mdb_get</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.mdb_put.html"
+                                  title='fn liblmdb_sys::mdb_put'>mdb_put</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.mdb_reader_check.html"
+                                  title='fn liblmdb_sys::mdb_reader_check'>mdb_reader_check</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.mdb_reader_list.html"
+                                  title='fn liblmdb_sys::mdb_reader_list'>mdb_reader_list</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.mdb_set_compare.html"
+                                  title='fn liblmdb_sys::mdb_set_compare'>mdb_set_compare</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.mdb_set_dupsort.html"
+                                  title='fn liblmdb_sys::mdb_set_dupsort'>mdb_set_dupsort</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.mdb_set_relctx.html"
+                                  title='fn liblmdb_sys::mdb_set_relctx'>mdb_set_relctx</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.mdb_set_relfunc.html"
+                                  title='fn liblmdb_sys::mdb_set_relfunc'>mdb_set_relfunc</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.mdb_stat.html"
+                                  title='fn liblmdb_sys::mdb_stat'>mdb_stat</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.mdb_strerror.html"
+                                  title='fn liblmdb_sys::mdb_strerror'>mdb_strerror</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.mdb_txn_abort.html"
+                                  title='fn liblmdb_sys::mdb_txn_abort'>mdb_txn_abort</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.mdb_txn_begin.html"
+                                  title='fn liblmdb_sys::mdb_txn_begin'>mdb_txn_begin</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.mdb_txn_commit.html"
+                                  title='fn liblmdb_sys::mdb_txn_commit'>mdb_txn_commit</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.mdb_txn_env.html"
+                                  title='fn liblmdb_sys::mdb_txn_env'>mdb_txn_env</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.mdb_txn_renew.html"
+                                  title='fn liblmdb_sys::mdb_txn_renew'>mdb_txn_renew</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.mdb_txn_reset.html"
+                                  title='fn liblmdb_sys::mdb_txn_reset'>mdb_txn_reset</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.mdb_version.html"
+                                  title='fn liblmdb_sys::mdb_version'>mdb_version</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr></table><h2 id='types' class='section-header'><a href="#types">Type Definitions</a></h2>
+<table>
+                       <tr class=' module-item'>
+                           <td><a class="type" href="type.MDB_cmp_func.html"
+                                  title='type liblmdb_sys::MDB_cmp_func'>MDB_cmp_func</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="type" href="type.MDB_dbi.html"
+                                  title='type liblmdb_sys::MDB_dbi'>MDB_dbi</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="type" href="type.MDB_msg_func.html"
+                                  title='type liblmdb_sys::MDB_msg_func'>MDB_msg_func</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="type" href="type.MDB_rel_func.html"
+                                  title='type liblmdb_sys::MDB_rel_func'>MDB_rel_func</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="type" href="type.mdb_filehandle_t.html"
+                                  title='type liblmdb_sys::mdb_filehandle_t'>mdb_filehandle_t</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="type" href="type.mdb_mode_t.html"
+                                  title='type liblmdb_sys::mdb_mode_t'>mdb_mode_t</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr></table></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>↑</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>↓</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>↹</dt>
+                    <dd>Switch tab</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                    <dt style="width:31px;">+ / -</dt>
+                    <dd>Collapse/expand all sections</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../";
+        window.currentCrate = "liblmdb_sys";
+    </script>
+    <script src="../main.js"></script>
+    <script defer src="../search-index.js"></script>
+</body>
+</html>

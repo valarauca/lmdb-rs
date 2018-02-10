@@ -31,6 +31,7 @@
 
 use std::{self, mem, slice};
 use std::borrow::{Cow, ToOwned,Borrow};
+use std::net::{Ipv4Addr,Ipv6Addr,IpAddr,SocketAddrV4,SocketAddrV6,SocketAddr};
 
 use core::MdbValue;
 use ffi::MDB_val;
@@ -132,15 +133,48 @@ impl<'b> FromMdbValue for Cow<'b,str> {
     }
 }
 
-macro_rules! mdb_for {
-    ($t:ty) => {
 
+/*
+ * Remove a lot of boilerplate
+ */
+macro_rules! mdb_for {
+
+    // standard entry point
+    //      triggers interior macros which do other stuff
+    ($t:ty) => {
+        mdb_for!(@T $t);
+        mdb_for!(@T [$t;1]);
+        mdb_for!(@T [$t;2]);
+        mdb_for!(@T [$t;3]);
+        mdb_for!(@T [$t;4]);
+        mdb_for!(@T [$t;5]);
+        mdb_for!(@T [$t;6]);
+        mdb_for!(@T [$t;7]);
+        mdb_for!(@T [$t;8]);
+        mdb_for!(@T [$t;9]);
+        mdb_for!(@T [$t;10]);
+        mdb_for!(@T [$t;11]);
+        mdb_for!(@T [$t;12]);
+        mdb_for!(@T [$t;13]);
+        mdb_for!(@T [$t;14]);
+        mdb_for!(@T [$t;15]);
+        mdb_for!(@T [$t;16]);
+    };
+
+    // Type level details
+    (@T $t: ty) => {
         impl ToMdbValue for $t {
             fn to_mdb_value<'a>(&'a self) -> MdbValue<'a> {
                 MdbValue::new_from_sized(self)
             }
         }
 
+        impl<'a> ToMdbValue for &'a $t {
+            fn to_mdb_value<'b>(&'b self) -> MdbValue<'b> {
+                MdbValue::new_from_sized(*self)
+            }
+        }
+        
         impl FromMdbValue for $t {
             fn from_mdb_value(value: &MdbValue) -> $t {
                 unsafe {
@@ -149,6 +183,51 @@ macro_rules! mdb_for {
                 }
             }
         }
+
+        impl<'a> FromMdbValue for &'a $t {
+            fn from_mdb_value(value: &MdbValue) -> &'a $t {
+                unsafe { mem::transmute(value.get_ref()) }
+            }
+        }
+   
+        // trigger reset
+        mdb_for!(@COL $t);
+        mdb_for!(@OPT $t);
+        mdb_for!(@COL Option<$t>);
+    };
+
+    // Type with option
+    (@OPT $t: ty) => {
+        impl ToMdbValue for Option<$t> {
+            fn to_mdb_value<'a>(&'a self) -> MdbValue<'a> {
+                MdbValue::new_from_sized(self)
+            }
+        }
+
+        impl<'a> ToMdbValue for &'a Option<$t> {
+            fn to_mdb_value<'b>(&'b self) -> MdbValue<'b> {
+                MdbValue::new_from_sized(*self)
+            }
+        }
+
+        impl FromMdbValue for Option<$t> {
+            fn from_mdb_value(value: &MdbValue) -> Option<$t> {
+                unsafe {
+                    let t: *const Option<$t> = mem::transmute(value.get_ref());
+                    return ::std::ptr::read_unaligned::<Option<$t>>(t);
+                }
+            }
+        }
+
+        impl<'a> FromMdbValue for &'a Option<$t> {
+            fn from_mdb_value(value: &MdbValue) -> &'a Option<$t> {
+                unsafe {
+                    mem::transmute(value.get_ref())
+                }
+            }
+        }
+    };
+    (@COL $t: ty) => {
 
         impl ToMdbValue for Vec<$t> {
             fn to_mdb_value<'b>(&'b self) -> MdbValue<'b> {
@@ -218,9 +297,16 @@ macro_rules! mdb_for {
                 }.to_vec()
             }
         }
-    }
+    };
 }
 
+
+mdb_for!(SocketAddr);
+mdb_for!(SocketAddrV6);
+mdb_for!(SocketAddrV4);
+mdb_for!(IpAddr);
+mdb_for!(Ipv6Addr);
+mdb_for!(Ipv4Addr);
 mdb_for!(u8);
 mdb_for!(i8);
 mdb_for!(u16);
