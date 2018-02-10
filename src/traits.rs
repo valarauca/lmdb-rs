@@ -30,6 +30,7 @@
 
 
 use std::{self, mem, slice};
+use std::borrow::{Cow, ToOwned,Borrow};
 
 use core::MdbValue;
 use ffi::MDB_val;
@@ -37,7 +38,6 @@ use ffi::MDB_val;
 /// `ToMdbValue` is supposed to convert a value to a memory
 /// slice which `lmdb` uses to prevent multiple copying data
 /// multiple times. May be unsafe.
-
 pub trait ToMdbValue {
     fn to_mdb_value<'a>(&'a self) -> MdbValue<'a>;
 }
@@ -45,17 +45,8 @@ pub trait ToMdbValue {
 /// `FromMdbValue` is supposed to reconstruct a value from
 /// memory slice. It allows to use zero copy where it is
 /// required.
-
 pub trait FromMdbValue {
     fn from_mdb_value(value: &MdbValue) -> Self;
-}
-
-impl ToMdbValue for Vec<u8> {
-    fn to_mdb_value<'a>(&'a self) -> MdbValue<'a> {
-        unsafe {
-            MdbValue::new(std::mem::transmute(self.as_ptr()), self.len())
-        }
-    }
 }
 
 impl ToMdbValue for String {
@@ -85,20 +76,11 @@ impl ToMdbValue for str {
     }
 }
 
-impl<'a> ToMdbValue for &'a [u8] {
+impl<'a> ToMdbValue for Cow<'a,str> {
     fn to_mdb_value<'b>(&'b self) -> MdbValue<'b> {
-        unsafe {
-            MdbValue::new(std::mem::transmute(self.as_ptr()),
-                          self.len())
-        }
-    }
-}
-
-impl ToMdbValue for [u8] {
-    fn to_mdb_value<'b>(&'b self) -> MdbValue<'b> {
-        unsafe {
-            MdbValue::new(std::mem::transmute(self.as_ptr()),
-                          self.len())
+        match self {
+            &Cow::Borrowed(ref x) => x.to_mdb_value(),
+            &Cow::Owned(ref x) => x.as_str().to_mdb_value(),
         }
     }
 }
@@ -117,23 +99,15 @@ impl<'a> ToMdbValue for MdbValue<'a> {
     }
 }
 
-
 impl FromMdbValue for String {
     fn from_mdb_value(value: &MdbValue) -> String {
         unsafe {
             let ptr = mem::transmute(value.get_ref());
             let bytes = slice::from_raw_parts(ptr, value.get_size());
-            let cow = String::from_utf8_lossy(bytes);
-            cow.into_owned()
-        }
-    }
-}
-
-impl FromMdbValue for Vec<u8> {
-    fn from_mdb_value(value: &MdbValue) -> Vec<u8> {
-        unsafe {
-            let ptr = mem::transmute(value.get_ref());
-            slice::from_raw_parts(ptr, value.get_size()).to_vec()
+            match String::from_utf8_lossy(bytes) {
+                Cow::Owned(x) => x,
+                Cow::Borrowed(x) => x.to_string(),
+            }
         }
     }
 }
@@ -150,17 +124,17 @@ impl<'b> FromMdbValue for &'b str {
         }
     }
 }
-
-impl<'b> FromMdbValue for &'b [u8] {
-    fn from_mdb_value(value: &MdbValue) -> &'b [u8] {
-        unsafe {
+impl<'b> FromMdbValue for Cow<'b,str> {
+    fn from_mdb_value(value: &MdbValue) -> Cow<'b,str> {
+        Cow::Borrowed(unsafe {
             std::mem::transmute(slice::from_raw_parts(value.get_ref(), value.get_size()))
-        }
+        })
     }
 }
 
-macro_rules! mdb_for_primitive {
-    ($t:ty) => (
+macro_rules! mdb_for {
+    ($t:ty) => {
+
         impl ToMdbValue for $t {
             fn to_mdb_value<'a>(&'a self) -> MdbValue<'a> {
                 MdbValue::new_from_sized(self)
@@ -176,17 +150,89 @@ macro_rules! mdb_for_primitive {
             }
         }
 
-        )
+        impl ToMdbValue for Vec<$t> {
+            fn to_mdb_value<'b>(&'b self) -> MdbValue<'b> {
+                self.as_slice().to_mdb_value()
+            }
+        }
+
+        impl<'a> ToMdbValue for &'a Vec<$t> {
+            fn to_mdb_value<'b>(&'b self) -> MdbValue<'b> {
+                self.as_slice().to_mdb_value()
+            }
+        }
+
+        impl<'a> ToMdbValue for &'a [$t] {
+            fn to_mdb_value<'b>(&'b self) -> MdbValue<'b> {
+                unsafe {
+                    MdbValue::new(mem::transmute(self.as_ptr()),
+                        mem::size_of::<$t>() * self.len(),)
+                }
+            }
+        }
+
+        impl<'a> ToMdbValue for Cow<'a, [$t]> {
+            fn to_mdb_value<'b>(&'b self) -> MdbValue<'b> {
+                match self {
+                    &Cow::Borrowed(ref x) => x.to_mdb_value(),
+                    &Cow::Owned(ref x) => x.as_slice().to_mdb_value(),
+                }
+            }
+        }
+
+        impl ToMdbValue for [$t] {
+            fn to_mdb_value<'b>(&'b self) -> MdbValue<'b> {
+                unsafe {
+                    MdbValue::new(mem::transmute(self.as_ptr()),
+                        mem::size_of::<$t>() * self.len(),)
+                }
+            }
+        }
+
+        impl<'a> FromMdbValue for &'a [$t] {
+            fn from_mdb_value(value: &MdbValue) -> &'a [$t] {
+                unsafe {
+                    let t: *const $t = mem::transmute(value.get_ref());
+                    let len = value.get_size() / mem::size_of::<$t>();
+                    slice::from_raw_parts(t,len)
+                }
+            }
+        }
+
+        impl<'a> FromMdbValue for Cow<'a,[$t]> {
+            fn from_mdb_value(value: &MdbValue) -> Cow<'a, [$t]> {
+                Cow::Borrowed(unsafe {
+                    let t: *const $t = mem::transmute(value.get_ref());
+                    let len = value.get_size() / mem::size_of::<$t>();
+                    slice::from_raw_parts(t,len)
+                })
+            }
+        }
+
+        impl FromMdbValue for Vec<$t> {
+            fn from_mdb_value(value: &MdbValue) -> Vec<$t> {
+                unsafe {
+                    let t: *const $t = mem::transmute(value.get_ref());
+                    let len = value.get_size() / mem::size_of::<$t>();
+                    slice::from_raw_parts(t,len)
+                }.to_vec()
+            }
+        }
+    }
 }
 
-mdb_for_primitive!(u8);
-mdb_for_primitive!(i8);
-mdb_for_primitive!(u16);
-mdb_for_primitive!(i16);
-mdb_for_primitive!(u32);
-mdb_for_primitive!(i32);
-mdb_for_primitive!(u64);
-mdb_for_primitive!(i64);
-mdb_for_primitive!(f32);
-mdb_for_primitive!(f64);
-mdb_for_primitive!(bool);
+mdb_for!(u8);
+mdb_for!(i8);
+mdb_for!(u16);
+mdb_for!(i16);
+mdb_for!(u32);
+mdb_for!(i32);
+mdb_for!(u64);
+mdb_for!(i64);
+mdb_for!(f32);
+mdb_for!(f64);
+mdb_for!(bool);
+mdb_for!(char);
+
+
+
